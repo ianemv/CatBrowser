@@ -71,22 +71,31 @@ class Home extends React.Component {
         this.fetchBreeds();
         if (this.props.location.search !==''){
             let breedId = this.props.location.search.substr(this.props.location.search.indexOf("=") + 1);
-            this.setState((state) => ({
+             this.setState((state) => ({
                 currentBreed: breedId
             }));
+
+            this.props.setCurrentBreed(breedId);
+
             this.fetchCats();
         }
     }
+    componentWillUnmount(){
+
+    }
+
 
     fetchBreeds(){
         let vm = this;
-         axios({
+        vm.setState({'loading':true})
+        axios({
             method: 'get',
             url: BREEDS_URL,
-          })
-            .then(function (response) {
-              // console.log(response);
-                vm.setState({'breeds':response.data})
+        })
+        .then(function (response) {
+            // console.log(response);
+                
+                vm.setState({'breeds':response.data, loading:false})
             });
     }
 
@@ -117,8 +126,11 @@ class Home extends React.Component {
       }
 
     fetchCats(){
+
         let catBreed = this.state.currentBreed;
         let vm = this;
+
+        if(catBreed==='' || typeof(catBreed)==='undefined') return;
         
         this.setState({loading:true})
 
